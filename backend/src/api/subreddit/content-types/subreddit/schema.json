@@ -1,0 +1,72 @@
+{
+  "kind": "collectionType",
+  "collectionName": "subreddits",
+  "info": {
+    "singularName": "subreddit",
+    "pluralName": "subreddits",
+    "displayName": "Subreddit",
+    "description": "Community for grouping posts"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "minLength": 3
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true,
+      "unique": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "rules": {
+      "type": "json",
+      "default": []
+    },
+    "exploreCategory": {
+      "type": "enumeration",
+      "enum": [
+        "general",
+        "technology",
+        "games",
+        "internet_culture",
+        "humanities_law",
+        "news_politics"
+      ],
+      "default": "general"
+    },
+    "weeklyVisitors": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "creator": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "creatorKey": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "posts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::post.post",
+      "mappedBy": "subreddit"
+    },
+    "memberships": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::community-membership.community-membership",
+      "mappedBy": "subreddit"
+    }
+  }
+}

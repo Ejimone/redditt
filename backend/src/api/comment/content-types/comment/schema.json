@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "comments",
+  "info": {
+    "singularName": "comment",
+    "pluralName": "comments",
+    "displayName": "Comment",
+    "description": "Comment attached to a post"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "content": {
+      "type": "text",
+      "required": true
+    },
+    "authorName": {
+      "type": "string",
+      "default": "anonymous"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "authorKey": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "score": {
+      "type": "integer",
+      "default": 0
+    },
+    "post": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::post.post",
+      "inversedBy": "comments",
+      "required": true
+    }
+  }
+}

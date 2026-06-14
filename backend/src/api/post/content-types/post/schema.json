@@ -1,0 +1,70 @@
+{
+  "kind": "collectionType",
+  "collectionName": "posts",
+  "info": {
+    "singularName": "post",
+    "pluralName": "posts",
+    "displayName": "Post",
+    "description": "Community post"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "minLength": 3
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true,
+      "unique": true
+    },
+    "content": {
+      "type": "text",
+      "required": true
+    },
+    "authorName": {
+      "type": "string",
+      "default": "anonymous"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "authorKey": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "score": {
+      "type": "integer",
+      "default": 0
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "videoUrl": {
+      "type": "string",
+      "maxLength": 2048
+    },
+    "subreddit": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subreddit.subreddit",
+      "inversedBy": "posts",
+      "required": true
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "post"
+    }
+  }
+}

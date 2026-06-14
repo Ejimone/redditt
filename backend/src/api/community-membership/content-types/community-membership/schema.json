@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "community_memberships",
+  "info": {
+    "singularName": "community-membership",
+    "pluralName": "community-memberships",
+    "displayName": "Community Membership",
+    "description": "Tracks membership between users and communities"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "membershipKey": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "actorKey": {
+      "type": "string",
+      "required": true,
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "actorName": {
+      "type": "string",
+      "default": "anonymous"
+    },
+    "role": {
+      "type": "enumeration",
+      "enum": ["member", "moderator"],
+      "default": "member"
+    },
+    "joinedAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "subreddit": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subreddit.subreddit",
+      "inversedBy": "memberships",
+      "required": true
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}
