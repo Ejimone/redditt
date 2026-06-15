@@ -57,7 +57,10 @@ export async function fetchStrapi<T>(
   const method = (options.method ?? "GET").toUpperCase();
   const isReadOnlyRequest = isReadOnlyMethod(method);
 
-  if (!url.searchParams.has("populate")) {
+  const hasAnyPopulate = [...url.searchParams.keys()].some(
+    (k) => k === "populate" || k.startsWith("populate["),
+  );
+  if (!hasAnyPopulate) {
     url.searchParams.set("populate", "*");
   }
 

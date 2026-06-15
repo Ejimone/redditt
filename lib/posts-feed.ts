@@ -47,6 +47,7 @@ export function buildPostsListPath(
       options.subredditExploreCategory,
     );
   }
+  params.set("populate", "*");
   return `/posts?${params.toString()}`;
 }
 

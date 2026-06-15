@@ -21,7 +21,7 @@ async function PostsResults({ query }: { query?: string }) {
   const isAuthenticated = Boolean(session?.user);
   let raw: Awaited<ReturnType<typeof fetchPostRecords>>;
   try {
-    raw = await fetchPostRecords(buildPostsListPath(25, query));
+    raw = await fetchPostRecords(buildPostsListPath(100, query));
   } catch (error) {
     if (isStrapiUnavailableError(error)) {
       return (

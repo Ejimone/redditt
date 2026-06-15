@@ -18,7 +18,7 @@ async function HomeFeed({ sort }: { sort: FeedSortMode }) {
   const isAuthenticated = Boolean(session?.user);
   let raw: Awaited<ReturnType<typeof fetchPostRecords>>;
   try {
-    raw = await fetchPostRecords(buildPostsListPath(20, undefined, sort));
+    raw = await fetchPostRecords(buildPostsListPath(100, undefined, sort));
   } catch (error) {
     if (isStrapiUnavailableError(error)) {
       return (

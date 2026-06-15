@@ -94,8 +94,7 @@ export function toFeedPost(
   const videoUrl = videoRaw || undefined;
   const mediaUrl = extractMediaUrl(post.image ?? post.thumbnail);
   const posterFromVideo = videoUrl ? cloudinaryVideoPosterUrl(videoUrl) : undefined;
-  const thumbnail =
-    mediaUrl ?? posterFromVideo ?? fallbackThumbnail(postSlug);
+  const thumbnail = mediaUrl ?? posterFromVideo ?? "";
   const subredditSlug =
     options.subredditSlug ?? post.subreddit?.slug ?? undefined;
 

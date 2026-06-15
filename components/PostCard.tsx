@@ -78,27 +78,29 @@ export default function PostCard({
         </p>
       ) : null}
 
-      <Link
-        href={href}
-        className="relative mt-3 block aspect-[16/10] w-full max-h-[70vh] overflow-hidden rounded-xl bg-muted sm:max-h-none"
-      >
-        {post.videoUrl ? (
-          <PostVideo
-            src={post.videoUrl}
-            poster={cloudinaryVideoPosterUrl(post.videoUrl)}
-            className="h-full min-h-[11rem] w-full"
-          />
-        ) : (
-          <Image
-            src={post.thumbnail}
-            alt=""
-            fill
-            priority={priority}
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 90vw, 740px"
-            className="object-cover"
-          />
-        )}
-      </Link>
+      {(post.thumbnail || post.videoUrl) ? (
+        <Link
+          href={href}
+          className="relative mt-3 block aspect-[16/10] w-full max-h-[70vh] overflow-hidden rounded-xl bg-muted sm:max-h-none"
+        >
+          {post.videoUrl ? (
+            <PostVideo
+              src={post.videoUrl}
+              poster={cloudinaryVideoPosterUrl(post.videoUrl)}
+              className="h-full min-h-[11rem] w-full"
+            />
+          ) : (
+            <Image
+              src={post.thumbnail}
+              alt=""
+              fill
+              priority={priority}
+              sizes="(max-width: 640px) 100vw, (max-width: 1280px) 90vw, 740px"
+              className="object-cover"
+            />
+          )}
+        </Link>
+      ) : null}
 
       <footer className="flex flex-wrap items-center gap-1 border-t border-white/10 px-2 py-2 sm:gap-2 sm:px-3">
         <VoteButtons

@@ -60,6 +60,63 @@ function hasActorIdentity(ctx: {
 export default factories.createCoreController(
   "api::post.post",
   ({ strapi }) => ({
+    async find(ctx) {
+      const rawQuery = ctx.query as {
+        sort?: string;
+        pagination?: { pageSize?: string | number; page?: string | number };
+        filters?: {
+          title?: { $containsi?: string };
+          subreddit?: { exploreCategory?: { $eq?: string } | string };
+        };
+      };
+
+      const pageSize = Math.min(
+        Math.max(Number(rawQuery.pagination?.pageSize ?? 25), 1),
+        100,
+      );
+      const page = Math.max(Number(rawQuery.pagination?.page ?? 1), 1);
+      const sortStr = String(rawQuery.sort ?? "createdAt:desc");
+
+      const where: Record<string, unknown> = {};
+      const titleSearch = rawQuery.filters?.title?.["$containsi"];
+      if (titleSearch) {
+        where.title = { $containsi: titleSearch };
+      }
+      const categoryRaw = rawQuery.filters?.subreddit?.exploreCategory;
+      const categoryFilter =
+        typeof categoryRaw === "string"
+          ? categoryRaw
+          : (categoryRaw as { $eq?: string } | undefined)?.["$eq"];
+      if (categoryFilter) {
+        where.subreddit = { exploreCategory: categoryFilter };
+      }
+
+      const [posts, total] = await Promise.all([
+        strapi.db.query("api::post.post").findMany({
+          where,
+          orderBy: sortStr.startsWith("score")
+            ? { score: "desc" }
+            : { createdAt: "desc" },
+          populate: ["subreddit", "image", "comments"],
+          limit: pageSize,
+          offset: (page - 1) * pageSize,
+        }),
+        strapi.db.query("api::post.post").count({ where }),
+      ]);
+
+      ctx.body = {
+        data: posts,
+        meta: {
+          pagination: {
+            page,
+            pageSize,
+            pageCount: Math.ceil(total / pageSize),
+            total,
+          },
+        },
+      };
+    },
+
     async bySubreddit(ctx) {
       const slug = String(ctx.params.slug || "").trim();
       const requestedPageSize = Number(

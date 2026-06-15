@@ -63,7 +63,7 @@ async function getSubredditBySlug(
 
 async function getPosts(slug: string) {
   const posts = await fetchCollection<Post>(
-    `/communities/${encodeURIComponent(slug)}/posts?pagination[pageSize]=10`,
+    `/communities/${encodeURIComponent(slug)}/posts?pagination[pageSize]=100`,
     {
       cache: "no-store",
     },

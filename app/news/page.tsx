@@ -23,7 +23,9 @@ async function NewsFeed({ sort }: { sort: FeedSortMode }) {
   const isAuthenticated = Boolean(session?.user);
   let raw: Awaited<ReturnType<typeof fetchPostRecords>>;
   try {
-    raw = await fetchPostRecords(buildPostsListPath(40, undefined, sort));
+    raw = await fetchPostRecords(
+      buildPostsListPath(100, undefined, sort, { subredditExploreCategory: "news_politics" }),
+    );
   } catch (error) {
     if (isStrapiUnavailableError(error)) {
       return (
@@ -43,7 +45,6 @@ async function NewsFeed({ sort }: { sort: FeedSortMode }) {
   }
 
   const posts = raw
-    .filter((post) => post.subreddit?.exploreCategory === "news_politics")
     .map((post) =>
       toFeedPost(post, { subredditSlug: post.subreddit?.slug }),
     )
