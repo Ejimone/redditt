@@ -45,7 +45,7 @@ function NavbarSearchForm({ defaultQuery }: { defaultQuery: string }) {
           aria-label="Search posts"
           enterKeyHint="search"
           autoComplete="off"
-          className="h-10 w-full min-w-0 rounded-full border border-white/10 bg-[#1a282d] py-2 pl-3 pr-[4.25rem] text-sm text-foreground placeholder:text-muted-foreground outline-none ring-0 transition-colors focus:border-white/20 disabled:opacity-60"
+          className="h-10 w-full min-w-0 rounded-full border border-border bg-muted py-2 pl-3 pr-[4.25rem] text-sm text-foreground placeholder:text-muted-foreground outline-none ring-0 transition-colors focus:border-border/20 disabled:opacity-60"
           disabled={isPending}
         />
         <button

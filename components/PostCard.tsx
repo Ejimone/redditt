@@ -35,7 +35,7 @@ export default function PostCard({
   const meta = post.timeAgo ?? post.createdAtDisplay;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-white/10 bg-card ring-1 ring-white/5">
+    <article className="overflow-hidden rounded-2xl border border-border bg-card ring-1 ring-black/5">
       <header className="flex items-start justify-between gap-2 px-3 pt-3 sm:px-4">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <SubredditAvatar slug={subredditSlug} />
@@ -102,7 +102,7 @@ export default function PostCard({
         </Link>
       ) : null}
 
-      <footer className="flex flex-wrap items-center gap-1 border-t border-white/10 px-2 py-2 sm:gap-2 sm:px-3">
+      <footer className="flex flex-wrap items-center gap-1 border-t border-border px-2 py-2 sm:gap-2 sm:px-3">
         <VoteButtons
           entityId={post.id}
           entityType="post"
@@ -111,7 +111,7 @@ export default function PostCard({
         />
         <Link
           href={href}
-          className="inline-flex min-h-11 touch-manipulation items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground active:bg-white/15 sm:min-h-10"
+          className="inline-flex min-h-11 touch-manipulation items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:bg-muted/80 sm:min-h-10"
         >
           <ChatCircle className="size-5 shrink-0" weight="bold" aria-hidden />
           {post.commentCount ?? 0} Comments

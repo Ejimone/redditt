@@ -24,7 +24,7 @@ const inter = Inter({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0b1416",
+  themeColor: "#ffffff",
   viewportFit: "cover",
 };
 
@@ -56,10 +56,10 @@ export default function RootLayout({
       lang="en"
       className={cn("h-full", geistSans.variable, geistMono.variable)}
     >
-      <body className={`${inter.className} min-h-full bg-[#0b1416]`}>
+      <body className={`${inter.className} min-h-full bg-background text-foreground`}>
         <Suspense
           fallback={
-            <div className="h-14 border-b border-white/10 bg-[#0b1416]" />
+            <div className="h-14 border-b border-border bg-background/95" />
           }
         >
           <Navbar />
@@ -68,7 +68,7 @@ export default function RootLayout({
           className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-[1600px] justify-center pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:justify-start md:pb-4"
         >
           <LeftSidebar />
-          <div className="min-w-0 flex-1 border-white/5 px-2 py-3 sm:px-4 md:border-x md:px-4 md:py-4 lg:px-6">
+          <div className="min-w-0 flex-1 border-border px-2 py-3 sm:px-4 md:border-x md:px-4 md:py-4 lg:px-6">
             {children}
           </div>
         </div>

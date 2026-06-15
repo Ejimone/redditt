@@ -57,10 +57,10 @@ export default function VoteButtons({
   };
 
   return (
-    <div className="inline-flex min-h-11 touch-manipulation items-center gap-0.5 rounded-full border border-white/10 bg-[#1a282d] px-0.5 py-0.5 text-xs font-bold sm:min-h-10 sm:text-sm">
+    <div className="inline-flex min-h-11 touch-manipulation items-center gap-0.5 rounded-full border border-border bg-muted/30 px-0.5 py-0.5 text-xs font-bold sm:min-h-10 sm:text-sm">
       <button
         type="button"
-        className="flex min-h-10 min-w-10 touch-manipulation items-center justify-center rounded-full text-muted-foreground hover:bg-white/10 hover:text-[#ff4500] active:bg-white/15"
+        className="flex min-h-10 min-w-10 touch-manipulation items-center justify-center rounded-full text-muted-foreground hover:bg-orange-500/10 hover:text-orange-500 active:bg-orange-500/20"
         onClick={() => handleVote(1)}
         aria-label="Upvote"
       >
@@ -71,7 +71,7 @@ export default function VoteButtons({
       </span>
       <button
         type="button"
-        className="flex min-h-10 min-w-10 touch-manipulation items-center justify-center rounded-full text-muted-foreground hover:bg-white/10 hover:text-[#7193ff] active:bg-white/15"
+        className="flex min-h-10 min-w-10 touch-manipulation items-center justify-center rounded-full text-muted-foreground hover:bg-blue-500/10 hover:text-blue-500 active:bg-blue-500/20"
         onClick={() => handleVote(-1)}
         aria-label="Downvote"
       >

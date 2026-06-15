@@ -24,6 +24,10 @@ type PopularCommunitiesPanelProps = {
   /** When set, footer link is shown (e.g. only if Strapi reports more pages). */
   seeMoreHref?: string;
   seeMoreLabel?: string;
+  /** In-place load more handler. If provided, seeMoreHref is ignored. */
+  onLoadMore?: () => void;
+  onViewLess?: () => void;
+  isLoadingMore?: boolean;
   /** Staggered fade-up (matches loading “reveal” feel). */
   animateRows?: boolean;
 };
@@ -34,18 +38,21 @@ export default function PopularCommunitiesPanel({
   panelTitle = "Popular communities",
   seeMoreHref,
   seeMoreLabel = "See more",
+  onLoadMore,
+  onViewLess,
+  isLoadingMore = false,
   animateRows = true,
 }: PopularCommunitiesPanelProps) {
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-white/10 bg-card ring-1 ring-white/5">
+    <div className="w-full overflow-hidden rounded-2xl border border-border bg-card ring-1 ring-black/5">
       {showPanelTitle ? (
-        <div className="border-b border-white/10 px-4 py-3">
+        <div className="border-b border-border px-4 py-3">
           <h2 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             {panelTitle}
           </h2>
         </div>
       ) : null}
-      <ul className="divide-y divide-white/5">
+      <ul className="max-h-[300px] overflow-y-auto divide-y border-border">
         {communities.map((c, i) => {
           const slug = c.slug ?? `community-${i}`;
           return (
@@ -76,11 +83,33 @@ export default function PopularCommunitiesPanel({
           );
         })}
       </ul>
-      {seeMoreHref ? (
-        <div className="border-t border-white/10 px-4 py-2">
+      {onLoadMore || onViewLess ? (
+        <div className="flex divide-x border-t border-border">
+          {onLoadMore ? (
+            <button
+              type="button"
+              onClick={onLoadMore}
+              disabled={isLoadingMore}
+              className="block flex-1 py-2 text-center text-sm font-bold text-foreground transition-colors hover:bg-muted disabled:opacity-50"
+            >
+              {isLoadingMore ? "Loading..." : seeMoreLabel}
+            </button>
+          ) : null}
+          {onViewLess ? (
+            <button
+              type="button"
+              onClick={onViewLess}
+              className="block flex-1 py-2 text-center text-sm font-bold text-foreground transition-colors hover:bg-muted"
+            >
+              View less
+            </button>
+          ) : null}
+        </div>
+      ) : seeMoreHref ? (
+        <div className="border-t border-border px-4 py-2">
           <Link
             href={seeMoreHref}
-            className="text-xs font-semibold text-reddit-blue hover:underline"
+            className="block w-full rounded-full py-2 text-center text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
             {seeMoreLabel}
           </Link>

@@ -18,7 +18,7 @@ export default function ExploreCommunityCard({
   const label = name?.trim() || slug;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#1a282d] p-3 ring-1 ring-white/5 sm:p-4">
+    <div className="rounded-2xl border border-border bg-card p-3 ring-1 ring-black/5 sm:p-4">
       <div className="flex items-start gap-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-rose-600 text-sm font-bold text-white">
           {letter}

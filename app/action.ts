@@ -3,8 +3,25 @@
 import { auth } from "@/app/auth";
 import { fetchStrapi } from "@/lib/api";
 import { getActorHeaders } from "@/lib/actor";
-import { toSlug } from "@/lib/strapi";
+import { fetchCollectionPagedSafe, toSlug } from "@/lib/strapi";
 import { revalidatePath } from "next/cache";
+
+export async function getPopularCommunities(page: number, pageSize: number = 5) {
+  return fetchCollectionPagedSafe<{
+    name?: string;
+    slug?: string;
+    description?: string;
+  }>(
+    `/subreddits?sort=createdAt:desc&pagination[pageSize]=${pageSize}&pagination[page]=${page}`,
+    { next: { revalidate: 60 } },
+    {
+      fallback: {
+        items: [],
+        hasMore: false,
+      },
+    },
+  );
+}
 
 const STRAPI_BASE_URL =
   process.env.STRAPI_URL?.trim() ||

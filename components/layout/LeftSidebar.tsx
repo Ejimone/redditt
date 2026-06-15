@@ -11,7 +11,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const linkClass =
-  "flex min-h-11 touch-manipulation items-center gap-3 rounded-full px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-white/10 active:bg-white/15";
+  "flex min-h-11 touch-manipulation items-center gap-3 rounded-full px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-muted active:bg-muted/80";
 
 type NavItem = {
   href: string;
@@ -39,7 +39,7 @@ export default function LeftSidebar() {
   const pathname = usePathname() || "/";
 
   return (
-    <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[min(240px,28vw)] min-w-[200px] max-w-[260px] shrink-0 flex-col border-r border-white/10 py-4 pl-2 pr-2 sm:pr-3 md:flex">
+    <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[min(240px,28vw)] min-w-[200px] max-w-[260px] shrink-0 flex-col border-r border-border py-4 pl-2 pr-2 sm:pr-3 md:flex">
       <nav aria-label="Main" className="flex flex-col gap-0.5">
         {mainNav.map((item) => {
           const { href, label, icon: Icon } = item;
@@ -50,7 +50,7 @@ export default function LeftSidebar() {
               href={href}
               className={`${linkClass} ${
                 on
-                  ? "bg-white/10 text-foreground"
+                  ? "bg-muted text-foreground"
                   : "text-foreground/90"
               }`}
             >
@@ -61,7 +61,7 @@ export default function LeftSidebar() {
         })}
       </nav>
 
-      <div className="mt-8 border-t border-white/10 pt-4">
+      <div className="mt-8 border-t border-border pt-4">
         <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
           Resources
         </p>
@@ -69,7 +69,7 @@ export default function LeftSidebar() {
           <li>
             <Link
               href="/help#about"
-              className="block min-h-10 touch-manipulation rounded-full px-3 py-2 hover:bg-white/10 hover:text-foreground"
+              className="block min-h-10 touch-manipulation rounded-full px-3 py-2 hover:bg-muted hover:text-foreground"
             >
               About
             </Link>
@@ -77,7 +77,7 @@ export default function LeftSidebar() {
           <li>
             <Link
               href="/help#faq"
-              className="block min-h-10 touch-manipulation rounded-full px-3 py-2 hover:bg-white/10 hover:text-foreground"
+              className="block min-h-10 touch-manipulation rounded-full px-3 py-2 hover:bg-muted hover:text-foreground"
             >
               Help
             </Link>

@@ -1,5 +1,6 @@
 import EmptyState from "@/components/EmptyState";
-import PopularCommunitiesPanel, {
+import PopularCommunitiesLoadMore from "@/components/PopularCommunitiesLoadMore";
+import {
   PopularCommunitiesPanelSkeleton,
 } from "@/components/PopularCommunitiesPanel";
 import FeedWithRightRail from "@/components/layout/FeedWithRightRail";
@@ -52,18 +53,18 @@ async function TrendingContent() {
   }
 
   return (
-    <PopularCommunitiesPanel
-      communities={trendingSubreddits}
+    <PopularCommunitiesLoadMore
+      initialCommunities={trendingSubreddits}
+      initialHasMore={hasMore}
+      pageSize={TRENDING_PAGE_SIZE}
       showPanelTitle={false}
-      seeMoreHref={hasMore ? "/explore" : undefined}
-      seeMoreLabel="Explore more communities"
     />
   );
 }
 
 export default function TrendingPage() {
   return (
-    <FeedWithRightRail>
+    <FeedWithRightRail showAside={false}>
       <main className="max-w-xl">
         <PageHeader
           title="Popular communities"

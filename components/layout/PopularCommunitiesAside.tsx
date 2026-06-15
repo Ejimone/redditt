@@ -1,4 +1,4 @@
-import PopularCommunitiesPanel from "@/components/PopularCommunitiesPanel";
+import PopularCommunitiesLoadMore from "@/components/PopularCommunitiesLoadMore";
 import { fetchCollectionPagedSafe } from "@/lib/strapi";
 
 type Community = {
@@ -42,12 +42,12 @@ export default async function PopularCommunitiesAside() {
       ) : null}
 
       {!offline && communities.length > 0 ? (
-        <PopularCommunitiesPanel
-          communities={communities}
+        <PopularCommunitiesLoadMore
+          initialCommunities={communities}
+          initialHasMore={hasMore}
+          pageSize={ASIDE_PAGE_SIZE}
           showPanelTitle
           panelTitle="Popular communities"
-          seeMoreHref={hasMore ? "/trending" : undefined}
-          seeMoreLabel="See more"
         />
       ) : null}
     </aside>

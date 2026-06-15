@@ -14,7 +14,7 @@ export default function MobileBottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed bottom-0 left-0 right-0 z-50 flex w-full items-stretch justify-evenly border-t border-white/10 bg-[#0b1416]/95 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1 backdrop-blur-md md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 flex w-full items-stretch justify-evenly border-t border-border bg-background/95 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1 backdrop-blur-md md:hidden"
     >
       <Link href="/" className={itemClass}>
         <House className="size-6" weight="regular" aria-hidden />
