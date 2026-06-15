@@ -1,3 +1,5 @@
+import * as fs from "node:fs";
+import * as nodePath from "node:path";
 import type { Core } from "@strapi/strapi";
 import { seedDatabase } from "./seed";
 
@@ -14,31 +16,31 @@ const PUBLIC_ROUTE_ACTIONS = [
   "api::post.post.find",
   "api::post.post.findOne",
   "api::post.post.bySubreddit",
+  "api::post.post.vote",
   "api::comment.comment.find",
   "api::comment.comment.findOne",
-];
-
-const AUTHENTICATED_ONLY_ACTIONS = [
-  "api::subreddit.subreddit.createCommunity",
-  "api::subreddit.subreddit.updateBySlug",
-  "api::subreddit.subreddit.deleteBySlug",
+  "api::comment.comment.vote",
   "api::subreddit.subreddit.join",
   "api::subreddit.subreddit.leave",
-  "api::subreddit.subreddit.myCommunities",
   "api::subreddit.subreddit.createPost",
   "api::subreddit.subreddit.updatePost",
   "api::subreddit.subreddit.deletePost",
   "api::subreddit.subreddit.createComment",
   "api::subreddit.subreddit.updateComment",
   "api::subreddit.subreddit.deleteComment",
-  "api::post.post.vote",
-  "api::comment.comment.vote",
-  "api::post.post.create",
-  "api::post.post.update",
-  "api::post.post.delete",
+  "api::subreddit.subreddit.createCommunity",
   "api::comment.comment.create",
   "api::comment.comment.update",
   "api::comment.comment.delete",
+];
+
+const AUTHENTICATED_ONLY_ACTIONS = [
+  "api::subreddit.subreddit.updateBySlug",
+  "api::subreddit.subreddit.deleteBySlug",
+  "api::subreddit.subreddit.myCommunities",
+  "api::post.post.create",
+  "api::post.post.update",
+  "api::post.post.delete",
   "api::subreddit.subreddit.create",
   "api::subreddit.subreddit.update",
   "api::subreddit.subreddit.delete",
@@ -146,11 +148,64 @@ async function syncCommunityRoutePermissions(strapi: Core.Strapi) {
   ]);
 }
 
+const DEV_TOKEN_NAME = "nextjs-frontend-dev";
+
+async function ensureApiToken(strapi: Core.Strapi) {
+  if (process.env.STRAPI_API_TOKEN) {
+    return;
+  }
+
+  try {
+    const stale = await strapi.db.query("admin::api-token").findOne({
+      where: { name: DEV_TOKEN_NAME },
+      select: ["id"],
+    });
+    if (stale?.id) {
+      await strapi.db.query("admin::api-token").delete({
+        where: { id: stale.id },
+      });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const apiTokenService = (strapi as any).service("admin::api-token");
+    const { accessKey } = await apiTokenService.create({
+      name: DEV_TOKEN_NAME,
+      description: "Auto-generated full-access token for Next.js frontend.",
+      type: "full-access",
+      expiresAt: null,
+    });
+
+    const envPath = nodePath.join(process.cwd(), "..", ".env");
+    if (fs.existsSync(envPath)) {
+      let content = fs.readFileSync(envPath, "utf8");
+      if (/^STRAPI_API_TOKEN=/m.test(content)) {
+        content = content.replace(
+          /^STRAPI_API_TOKEN=.*$/m,
+          `STRAPI_API_TOKEN=${accessKey}`,
+        );
+      } else {
+        content = content.trimEnd() + `\nSTRAPI_API_TOKEN=${accessKey}\n`;
+      }
+      fs.writeFileSync(envPath, content, "utf8");
+      strapi.log.info(
+        "[bootstrap] Wrote STRAPI_API_TOKEN to .env — restart Next.js to enable image uploads.",
+      );
+    } else {
+      strapi.log.info(
+        `[bootstrap] Add to your .env: STRAPI_API_TOKEN=${accessKey}`,
+      );
+    }
+  } catch (err) {
+    strapi.log.warn("[bootstrap] Could not auto-generate STRAPI_API_TOKEN", err);
+  }
+}
+
 export default {
   register() {},
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     await syncCommunityRoutePermissions(strapi);
     await seedDatabase(strapi);
+    await ensureApiToken(strapi);
   },
 };
