@@ -3,6 +3,7 @@ import { auth } from "@/app/auth";
 import NavbarSearch from "@/components/NavbarSearch";
 import Link from "next/link";
 import { Suspense } from "react";
+import MobileNav from "@/components/layout/MobileBottomNav";
 
 function summaryPill() {
   return "flex min-h-10 cursor-pointer list-none items-center rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-foreground touch-manipulation outline-none hover:bg-white/10 [&::-webkit-details-marker]:hidden";
@@ -14,7 +15,8 @@ export default async function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-2 px-2 sm:gap-3 sm:px-4 md:px-6">
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1">
+          <MobileNav />
           <Link
             href="/"
             className="flex min-h-10 min-w-10 touch-manipulation items-center text-lg font-extrabold tracking-tight text-foreground"
@@ -65,7 +67,7 @@ export default async function Navbar() {
             >
               <span className="text-lg leading-none">⋯</span>
             </summary>
-            <div className="absolute right-0 z-50 mt-2 w-48 rounded-2xl border border-white/10 bg-[#1a282d] py-1 text-sm shadow-lg ring-1 ring-white/5">
+            <div className="absolute right-0 z-50 mt-2 w-48 rounded-2xl border border-white/10 bg-[#ffff] py-1 text-sm shadow-lg ring-1 ring-white/5 border-gray-500">
               <Link
                 href="/help"
                 className="block min-h-11 touch-manipulation px-4 py-3 text-foreground hover:bg-white/10"

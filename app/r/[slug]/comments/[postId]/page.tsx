@@ -60,14 +60,18 @@ type MembershipRecord = {
 };
 
 async function getPost(slug: string, postSlug: string): Promise<Post | null> {
-  const posts = await fetchCollection<PostRecord>(
-    `/communities/${encodeURIComponent(slug)}/posts?pagination[pageSize]=50`,
-    {
-      cache: "no-store",
-    },
-  );
+  const params = new URLSearchParams();
+  params.set("filters[slug][$eq]", postSlug);
+  params.set("filters[subreddit][slug][$eq]", slug);
+  params.set("pagination[pageSize]", "1");
+  params.set("populate[comments]", "*");
+  params.set("populate[image]", "*");
 
-  const post = posts.find((item) => item.slug === postSlug);
+  const posts = await fetchCollection<PostRecord>(`/posts?${params.toString()}`, {
+    cache: "no-store",
+  });
+
+  const post = posts[0];
   if (!post?.id) {
     return null;
   }
@@ -82,11 +86,9 @@ async function getPost(slug: string, postSlug: string): Promise<Post | null> {
 
   const comments = extractRelationArray<CommentRecord>(post.comments)
     .map((commentEntity) => unwrapStrapiEntity(commentEntity))
-    .filter((comment): comment is CommentRecord & { id: number } =>
-      Number.isInteger(comment.id),
-    )
+    .filter((comment) => comment.content !== undefined)
     .map((comment) => ({
-      id: comment.id,
+      id: comment.id ?? 0,
       content: comment.content ?? "",
       authorName: comment.authorName ?? "anonymous",
       score: comment.score ?? 0,

@@ -298,6 +298,10 @@ export async function joinCommunity(slug: string) {
   );
 
   revalidatePath(`/r/${normalizedSlug}`);
+  revalidatePath("/");
+  revalidatePath("/", "layout");
+  revalidatePath("/trending");
+  revalidatePath("/explore");
 }
 
 export async function leaveCommunity(slug: string) {
@@ -318,6 +322,10 @@ export async function leaveCommunity(slug: string) {
   );
 
   revalidatePath(`/r/${normalizedSlug}`);
+  revalidatePath("/");
+  revalidatePath("/", "layout");
+  revalidatePath("/trending");
+  revalidatePath("/explore");
 }
 
 async function voteEntity(path: string, value: number) {

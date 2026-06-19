@@ -32,7 +32,7 @@ export default function PostCard({
   showSubredditLink = true,
 }: PostCardProps) {
   const href = `/r/${subredditSlug}/comments/${post.slug}`;
-  const meta = post.timeAgo ?? post.createdAtDisplay;
+  const meta = post.createdAtDisplay ?? post.timeAgo;
 
   return (
     <article className="overflow-hidden rounded-2xl border border-border bg-card ring-1 ring-black/5">

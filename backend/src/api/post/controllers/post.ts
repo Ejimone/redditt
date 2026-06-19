@@ -66,7 +66,11 @@ export default factories.createCoreController(
         pagination?: { pageSize?: string | number; page?: string | number };
         filters?: {
           title?: { $containsi?: string };
-          subreddit?: { exploreCategory?: { $eq?: string } | string };
+          slug?: { $eq?: string };
+          subreddit?: {
+            exploreCategory?: { $eq?: string } | string;
+            slug?: { $eq?: string } | string;
+          };
         };
       };
 
@@ -82,13 +86,32 @@ export default factories.createCoreController(
       if (titleSearch) {
         where.title = { $containsi: titleSearch };
       }
-      const categoryRaw = rawQuery.filters?.subreddit?.exploreCategory;
-      const categoryFilter =
-        typeof categoryRaw === "string"
-          ? categoryRaw
-          : (categoryRaw as { $eq?: string } | undefined)?.["$eq"];
-      if (categoryFilter) {
-        where.subreddit = { exploreCategory: categoryFilter };
+      const slugFilter = rawQuery.filters?.slug?.["$eq"];
+      if (slugFilter) {
+        where.slug = slugFilter;
+      }
+      const subredditFilters = rawQuery.filters?.subreddit;
+      if (subredditFilters) {
+        const subredditWhere: Record<string, unknown> = {};
+        const categoryRaw = subredditFilters.exploreCategory;
+        const categoryFilter =
+          typeof categoryRaw === "string"
+            ? categoryRaw
+            : (categoryRaw as { $eq?: string } | undefined)?.["$eq"];
+        if (categoryFilter) {
+          subredditWhere.exploreCategory = categoryFilter;
+        }
+        const subredditSlugRaw = subredditFilters.slug;
+        const subredditSlugFilter =
+          typeof subredditSlugRaw === "string"
+            ? subredditSlugRaw
+            : (subredditSlugRaw as { $eq?: string } | undefined)?.["$eq"];
+        if (subredditSlugFilter) {
+          subredditWhere.slug = subredditSlugFilter;
+        }
+        if (Object.keys(subredditWhere).length > 0) {
+          where.subreddit = subredditWhere;
+        }
       }
 
       const [posts, total] = await Promise.all([
