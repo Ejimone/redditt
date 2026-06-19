@@ -80,10 +80,7 @@ npx next build --webpack
 
 Backend:
 
-```bash
-cd backend
-npm run build
-```
+
 
 ## 5. Webhook
 
