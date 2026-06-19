@@ -85,7 +85,7 @@ cd backend
 npm run build
 ```
 
-## 5. Strapi Webhook (Recommended)
+## 5. Webhook
 
 Create a Strapi webhook to call:
 
