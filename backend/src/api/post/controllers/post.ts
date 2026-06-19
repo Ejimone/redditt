@@ -29,14 +29,26 @@ function normalizeActorKey(value: string): string {
     .slice(0, 120);
 }
 
-function hasActorIdentity(ctx: {
+type ActorIdentity = {
+  key: string;
+  name: string;
+  userId?: number;
+};
+
+function getActorFromContext(ctx: {
   state?: { user?: unknown };
   query?: Record<string, unknown>;
   request?: { headers?: Record<string, unknown>; body?: unknown };
-}): boolean {
-  const user = ctx.state?.user as { id?: number } | undefined;
+}): ActorIdentity | null {
+  const user = ctx.state?.user as
+    | { id?: number; username?: string; email?: string }
+    | undefined;
   if (user && Number.isInteger(user.id)) {
-    return true;
+    return {
+      key: `user:${user.id}`,
+      name: asString(user.username) || asString(user.email) || "anonymous",
+      userId: user.id,
+    };
   }
 
   const headers =
@@ -54,8 +66,21 @@ function hasActorIdentity(ctx: {
     asHeaderValue(headers, "x-reddit-actor-key") ||
     asString(ctx.query?.actorKey);
 
-  return Boolean(normalizeActorKey(actorKeyInput));
+  const normalizedActorKey = normalizeActorKey(actorKeyInput);
+  if (!normalizedActorKey) {
+    return null;
+  }
+
+  const actorName =
+    asString(body.actorName) ||
+    asHeaderValue(headers, "x-reddit-actor-name") ||
+    asString(ctx.query?.actorName) ||
+    "anonymous";
+
+  return { key: `actor:${normalizedActorKey}`, name: actorName };
 }
+
+const VOTE_UID = "api::vote.vote";
 
 export default factories.createCoreController(
   "api::post.post",
@@ -120,7 +145,11 @@ export default factories.createCoreController(
           orderBy: sortStr.startsWith("score")
             ? { score: "desc" }
             : { createdAt: "desc" },
-          populate: ["subreddit", "image", "comments"],
+          populate: {
+            subreddit: true,
+            image: true,
+            comments: { populate: ["parent"] },
+          },
           limit: pageSize,
           offset: (page - 1) * pageSize,
         }),
@@ -179,7 +208,8 @@ export default factories.createCoreController(
     },
 
     async vote(ctx) {
-      if (!hasActorIdentity(ctx)) {
+      const actor = getActorFromContext(ctx);
+      if (!actor) {
         return ctx.unauthorized("Please sign in to vote.");
       }
 
@@ -203,14 +233,49 @@ export default factories.createCoreController(
         return ctx.notFound("Post not found.");
       }
 
+      const voteKey = `post:${id}:${actor.key}`;
+      const existingVote = await strapi.db.query(VOTE_UID as any).findOne({
+        where: { voteKey },
+        select: ["id", "value"],
+      });
+
+      let scoreDelta = value;
+      let userVote = value;
+
+      if (existingVote && existingVote.value === value) {
+        await strapi.db
+          .query(VOTE_UID as any)
+          .delete({ where: { id: existingVote.id } });
+        scoreDelta = -value;
+        userVote = 0;
+      } else if (existingVote) {
+        await strapi.db.query(VOTE_UID as any).update({
+          where: { id: existingVote.id },
+          data: { value, actorName: actor.name },
+        });
+        scoreDelta = value - existingVote.value;
+      } else {
+        await strapi.db.query(VOTE_UID as any).create({
+          data: {
+            voteKey,
+            actorKey: actor.key,
+            actorName: actor.name,
+            entityType: "post",
+            entityId: id,
+            value,
+            ...(actor.userId ? { user: actor.userId } : {}),
+          },
+        });
+      }
+
       const updatedPost = await strapi.db.query("api::post.post").update({
         where: { id },
         data: {
-          score: (currentPost.score ?? 0) + value,
+          score: (currentPost.score ?? 0) + scoreDelta,
         },
       });
 
-      ctx.body = { data: updatedPost };
+      ctx.body = { data: { ...updatedPost, userVote } };
     },
   }),
 );

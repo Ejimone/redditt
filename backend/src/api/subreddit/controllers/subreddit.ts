@@ -1291,6 +1291,25 @@ export default factories.createCoreController(SUBREDDIT_UID, ({ strapi }) => ({
       return ctx.badRequest("Comment content is required.");
     }
 
+    let parentCommentId: number | null = null;
+    if (hasOwn(payload, "parentId") && payload.parentId !== null) {
+      const parentId = parsePositiveId(payload.parentId);
+      if (!parentId) {
+        return ctx.badRequest("Invalid parent comment id.");
+      }
+
+      const parentComment = await strapi.db.query(COMMENT_UID).findOne({
+        where: { id: parentId, post: post.id },
+        select: ["id"],
+      });
+
+      if (!parentComment) {
+        return ctx.badRequest("Parent comment not found in this post.");
+      }
+
+      parentCommentId = parentComment.id;
+    }
+
     const createdComment = await strapi.db.query(COMMENT_UID).create({
       data: {
         content,
@@ -1298,6 +1317,7 @@ export default factories.createCoreController(SUBREDDIT_UID, ({ strapi }) => ({
         authorKey: actor.key,
         ...(actor.userId ? { author: actor.userId } : {}),
         post: post.id,
+        ...(parentCommentId ? { parent: parentCommentId } : {}),
       },
     });
 

@@ -1,3 +1,4 @@
+import CommunityMembershipButton from "@/components/CommunityMembershipButton";
 import PostVideo from "@/components/PostVideo";
 import SharePostButton from "@/components/SharePostButton";
 import VoteButtons from "@/components/VoteButtons";
@@ -11,6 +12,7 @@ type PostCardProps = {
   post: FeedPost;
   subredditSlug: string;
   isAuthenticated: boolean;
+  isMember?: boolean;
   priority?: boolean;
   showSubredditLink?: boolean;
 };
@@ -28,6 +30,7 @@ export default function PostCard({
   post,
   subredditSlug,
   isAuthenticated,
+  isMember,
   priority = false,
   showSubredditLink = true,
 }: PostCardProps) {
@@ -58,12 +61,18 @@ export default function PostCard({
             ) : null}
           </div>
         </div>
-        <Link
-          href={`/r/${subredditSlug}`}
-          className="shrink-0 rounded-full border border-[#0079d3] px-3 py-2 text-xs font-bold leading-none text-[#0079d3] transition-colors hover:bg-[#0079d3]/10 min-[360px]:px-3 min-[360px]:py-1.5"
-        >
-          Join
-        </Link>
+        {isAuthenticated && typeof isMember === "boolean" ? (
+          <div className="shrink-0">
+            <CommunityMembershipButton slug={subredditSlug} isMember={isMember} compact />
+          </div>
+        ) : (
+          <Link
+            href={`/r/${subredditSlug}`}
+            className="shrink-0 rounded-full border border-[#0079d3] px-3 py-2 text-xs font-bold leading-none text-[#0079d3] transition-colors hover:bg-[#0079d3]/10 min-[360px]:px-3 min-[360px]:py-1.5"
+          >
+            Join
+          </Link>
+        )}
       </header>
 
       <Link href={href} className="block px-3 pt-2 sm:px-4">

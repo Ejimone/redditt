@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "votes",
+  "info": {
+    "singularName": "vote",
+    "pluralName": "votes",
+    "displayName": "Vote",
+    "description": "Tracks a single actor's vote on a post or comment"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "voteKey": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "actorKey": {
+      "type": "string",
+      "required": true,
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "actorName": {
+      "type": "string",
+      "default": "anonymous"
+    },
+    "entityType": {
+      "type": "enumeration",
+      "enum": ["post", "comment"],
+      "required": true
+    },
+    "entityId": {
+      "type": "integer",
+      "required": true
+    },
+    "value": {
+      "type": "integer",
+      "required": true
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

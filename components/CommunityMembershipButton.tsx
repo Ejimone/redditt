@@ -12,7 +12,8 @@ import { useFormStatus } from "react-dom";
 type CommunityMembershipButtonProps = {
   slug: string;
   isMember: boolean;
-  memberCount: number;
+  memberCount?: number;
+  compact?: boolean;
 };
 
 function SubmitButton({ isMember }: { isMember: boolean }) {
@@ -36,6 +37,7 @@ export default function CommunityMembershipButton({
   slug,
   isMember,
   memberCount,
+  compact = false,
 }: CommunityMembershipButtonProps) {
   const action = isMember ? leaveCommunityAction : joinCommunityAction;
   const [state, formAction] = useActionState<FormActionState | null, FormData>(
@@ -44,14 +46,16 @@ export default function CommunityMembershipButton({
   );
 
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-3">
+    <div className={compact ? "flex items-center gap-2" : "mb-6 flex flex-wrap items-center gap-3"}>
       <form action={formAction}>
         <input type="hidden" name="slug" value={slug} />
         <SubmitButton isMember={isMember} />
       </form>
-      <span className="text-xs text-muted-foreground">
-        {memberCount.toLocaleString()} members
-      </span>
+      {memberCount !== undefined ? (
+        <span className="text-xs text-muted-foreground">
+          {memberCount.toLocaleString()} members
+        </span>
+      ) : null}
       {state?.error ? (
         <p className="text-xs text-red-400" role="alert">
           {state.error}

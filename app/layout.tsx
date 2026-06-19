@@ -69,7 +69,13 @@ export default function RootLayout({
           <div
             className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-[1600px] justify-center pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:justify-start md:pb-4"
           >
-            <LeftSidebar />
+            <Suspense
+              fallback={
+                <div className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[min(240px,28vw)] min-w-[200px] max-w-[260px] shrink-0 border-r border-border py-4 pl-2 pr-2 sm:pr-3 md:block" />
+              }
+            >
+              <LeftSidebar />
+            </Suspense>
             <div className="min-w-0 flex-1 border-border px-2 py-3 sm:px-4 md:border-x md:px-4 md:py-4 lg:px-6">
               {children}
             </div>

@@ -1,4 +1,5 @@
 import { auth } from "@/app/auth";
+import { getJoinedCommunities } from "@/app/action";
 import EmptyState from "@/components/EmptyState";
 import FeedSortPills from "@/components/FeedSortPills";
 import FeedWithRightRail from "@/components/layout/FeedWithRightRail";
@@ -16,9 +17,28 @@ import { Suspense } from "react";
 async function HomeFeed({ sort }: { sort: FeedSortMode }) {
   const session = await auth();
   const isAuthenticated = Boolean(session?.user);
+  const joinedCommunities = isAuthenticated ? await getJoinedCommunities() : [];
+  const joinedSlugs = new Set(
+    joinedCommunities.map((c) => c.slug).filter((slug): slug is string => Boolean(slug)),
+  );
+
   let raw: Awaited<ReturnType<typeof fetchPostRecords>>;
+  let isPersonalized = false;
   try {
-    raw = await fetchPostRecords(buildPostsListPath(100, undefined, sort));
+    if (joinedSlugs.size > 0) {
+      raw = await fetchPostRecords(
+        buildPostsListPath(100, undefined, sort, {
+          subredditSlugs: [...joinedSlugs],
+        }),
+      );
+      isPersonalized = raw.length > 0;
+    } else {
+      raw = [];
+    }
+
+    if (!isPersonalized) {
+      raw = await fetchPostRecords(buildPostsListPath(100, undefined, sort));
+    }
   } catch (error) {
     if (isStrapiUnavailableError(error)) {
       return (
@@ -48,6 +68,7 @@ async function HomeFeed({ sort }: { sort: FeedSortMode }) {
           post={post}
           subredditSlug={post.subredditSlug!}
           isAuthenticated={isAuthenticated}
+          isMember={joinedSlugs.has(post.subredditSlug!)}
           priority={index === 0}
           showSubredditLink
         />

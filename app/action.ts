@@ -6,6 +6,31 @@ import { getActorHeaders } from "@/lib/actor";
 import { fetchCollectionPagedSafe, toSlug } from "@/lib/strapi";
 import { revalidatePath } from "next/cache";
 
+export type JoinedCommunity = {
+  id?: number;
+  slug?: string;
+  name?: string;
+  description?: string;
+};
+
+export async function getJoinedCommunities(): Promise<JoinedCommunity[]> {
+  const session = await auth();
+  if (!session?.user) {
+    return [];
+  }
+
+  const { items } = await fetchCollectionPagedSafe<JoinedCommunity>(
+    "/communities/me/joined?pagination[pageSize]=50&pagination[page]=1",
+    {
+      headers: withActorHeaders(session.user),
+      cache: "no-store",
+    },
+    { fallback: { items: [], hasMore: false } },
+  );
+
+  return items;
+}
+
 export async function getPopularCommunities(page: number, pageSize: number = 5) {
   return fetchCollectionPagedSafe<{
     name?: string;
@@ -253,6 +278,8 @@ export async function createComment(formData: FormData) {
   const postSlug = asString(formData.get("postSlug"));
   const subredditSlug = asString(formData.get("slug"));
   const content = asString(formData.get("content"));
+  const parentIdRaw = asString(formData.get("parentId"));
+  const parentId = parentIdRaw ? Number(parentIdRaw) : undefined;
 
   if (!Number.isInteger(postId) || !postSlug || !subredditSlug || !content) {
     throw new Error("Comment content, post id, and route slugs are required.");
@@ -271,6 +298,7 @@ export async function createComment(formData: FormData) {
     body: JSON.stringify({
       data: {
         content,
+        ...(Number.isInteger(parentId) ? { parentId } : {}),
       },
     }),
     cache: "no-store",
@@ -335,14 +363,17 @@ async function voteEntity(path: string, value: number) {
 
   const user = await requireAuthenticatedUser();
 
-  return fetchStrapi<{ data: { id: number; score: number } }>(path, {
-    method: "POST",
-    headers: withActorHeaders(user, {
-      "Content-Type": "application/json",
-    }),
-    body: JSON.stringify({ value }),
-    cache: "no-store",
-  });
+  return fetchStrapi<{ data: { id: number; score: number; userVote: number } }>(
+    path,
+    {
+      method: "POST",
+      headers: withActorHeaders(user, {
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify({ value }),
+      cache: "no-store",
+    },
+  );
 }
 
 export async function votePost(postId: number, value: number) {

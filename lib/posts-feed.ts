@@ -31,7 +31,7 @@ export function buildPostsListPath(
   pageSize: number,
   query?: string,
   sort: FeedSortMode = "new",
-  options?: { subredditExploreCategory?: string },
+  options?: { subredditExploreCategory?: string; subredditSlugs?: string[] },
 ): string {
   const sortParam = sort === "new" ? "createdAt:desc" : "score:desc";
   const params = new URLSearchParams();
@@ -46,6 +46,11 @@ export function buildPostsListPath(
       "filters[subreddit][exploreCategory][$eq]",
       options.subredditExploreCategory,
     );
+  }
+  if (options?.subredditSlugs?.length) {
+    options.subredditSlugs.forEach((slug) => {
+      params.append("filters[subreddit][slug][$in]", slug);
+    });
   }
   params.set("populate", "*");
   return `/posts?${params.toString()}`;
