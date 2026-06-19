@@ -55,7 +55,7 @@ async function TrendingContent() {
   return (
     <PopularCommunitiesLoadMore
       initialCommunities={trendingSubreddits}
-      initialHasMore={hasMore}
+      initialHasMore={hasMore && trendingSubreddits.length === TRENDING_PAGE_SIZE}
       pageSize={TRENDING_PAGE_SIZE}
       showPanelTitle={false}
     />

@@ -52,7 +52,7 @@ export default function PopularCommunitiesPanel({
           </h2>
         </div>
       ) : null}
-      <ul className="max-h-[300px] overflow-y-auto divide-y border-border">
+      <ul className="max-h-[calc(100vh-8rem)] overflow-y-auto divide-y border-border">
         {communities.map((c, i) => {
           const slug = c.slug ?? `community-${i}`;
           return (

@@ -44,7 +44,7 @@ export default async function PopularCommunitiesAside() {
       {!offline && communities.length > 0 ? (
         <PopularCommunitiesLoadMore
           initialCommunities={communities}
-          initialHasMore={hasMore}
+          initialHasMore={hasMore && communities.length === ASIDE_PAGE_SIZE}
           pageSize={ASIDE_PAGE_SIZE}
           showPanelTitle
           panelTitle="Popular communities"

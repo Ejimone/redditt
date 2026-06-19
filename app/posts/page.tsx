@@ -1,8 +1,8 @@
 import { auth } from "@/app/auth";
 import EmptyState from "@/components/EmptyState";
 import FeedWithRightRail from "@/components/layout/FeedWithRightRail";
+import LivePostsResults from "@/components/LivePostsResults";
 import PageHeader from "@/components/PageHeader";
-import PostCard from "@/components/PostCard";
 import { toFeedPost } from "@/lib/feed-post";
 import {
   buildPostsListPath,
@@ -26,7 +26,7 @@ async function PostsResults({ query }: { query?: string }) {
     if (isStrapiUnavailableError(error)) {
       return (
         <>
-          <PageHeader title="All posts" />
+          <PageHeader title="Recent posts" />
           <EmptyState
             tone="error"
             message="Backend data is currently unavailable. Please check Strapi and try again."
@@ -45,29 +45,11 @@ async function PostsResults({ query }: { query?: string }) {
     .filter((post) => Boolean(post.subredditSlug));
 
   return (
-    <>
-      <PageHeader
-        title={query ? `Results for “${query}”` : "All posts"}
-        description="The latest submissions across communities, newest first."
-      />
-
-      <div className="flex flex-col gap-4">
-        {posts.length === 0 ? (
-          <EmptyState message="No posts match. Try another search or create the first post in a community." />
-        ) : null}
-
-        {posts.map((post, index) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            subredditSlug={post.subredditSlug!}
-            isAuthenticated={isAuthenticated}
-            priority={index === 0}
-            showSubredditLink
-          />
-        ))}
-      </div>
-    </>
+    <LivePostsResults
+      initialPosts={posts}
+      initialQuery={query ?? ""}
+      isAuthenticated={isAuthenticated}
+    />
   );
 }
 

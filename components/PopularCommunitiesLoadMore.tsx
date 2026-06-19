@@ -31,7 +31,9 @@ export default function PopularCommunitiesLoadMore({
         const result = await getPopularCommunities(nextPage, pageSize);
         if (result.items.length > 0) {
           setCommunities((prev) => [...prev, ...result.items]);
-          setHasMore(result.hasMore);
+          // A short page is a definitive "no more" signal, regardless of
+          // what the backend's pagination metadata claims.
+          setHasMore(result.hasMore && result.items.length === pageSize);
           setPage(nextPage);
         } else {
           setHasMore(false);
