@@ -4,6 +4,7 @@ import NavbarSearch from "@/components/NavbarSearch";
 import Link from "next/link";
 import { Suspense } from "react";
 import MobileNav from "@/components/layout/MobileBottomNav";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function summaryPill() {
   return "flex min-h-10 cursor-pointer list-none items-center rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-foreground touch-manipulation outline-none hover:bg-white/10 [&::-webkit-details-marker]:hidden";
@@ -34,24 +35,7 @@ export default async function Navbar() {
         </Suspense>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          {session?.user ? (
-            <>
-              <Link
-                href="/settings"
-                className="hidden min-h-10 touch-manipulation items-center rounded-full px-3 py-1.5 text-xs font-bold text-foreground hover:bg-white/10 sm:inline-flex"
-              >
-                Settings
-              </Link>
-              <form action={logoutAction}>
-                <button
-                  type="submit"
-                  className="flex min-h-10 touch-manipulation items-center rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-white/10"
-                >
-                  Log out
-                </button>
-              </form>
-            </>
-          ) : (
+          {!session?.user && (
             <Link
               href="/login"
               className="inline-flex h-10 min-h-10 touch-manipulation items-center rounded-full bg-[#ff4500] px-4 text-xs font-bold text-white hover:bg-[#ff5414] sm:px-5"
@@ -65,47 +49,46 @@ export default async function Navbar() {
               className={`${summaryPill()} flex size-10 items-center justify-center px-0 sm:w-auto sm:px-3`}
               aria-label="More menu"
             >
-              <span className="text-lg leading-none">⋯</span>
+              {session?.user ? (
+                <Avatar size="sm">
+                  <AvatarImage
+                    src={session.user.image ?? undefined}
+                    alt={session.user.name ?? "Account"}
+                  />
+                  <AvatarFallback>
+                    {session.user.name?.[0]?.toUpperCase() ?? "?"}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <span className="text-lg leading-none">⋯</span>
+              )}
             </summary>
             <div className="absolute right-0 z-50 mt-2 w-48 rounded-2xl border border-white/10 bg-[#ffff] py-1 text-sm shadow-lg ring-1 ring-white/5 border-gray-500">
+              {session?.user ? (
+                <>
+                  <Link
+                    href="/settings"
+                    className="block min-h-11 touch-manipulation px-4 py-3 text-foreground hover:bg-white/10"
+                  >
+                    Settings
+                  </Link>
+                  <form action={logoutAction}>
+                    <button
+                      type="submit"
+                      className="block w-full min-h-11 touch-manipulation px-4 py-3 text-left text-foreground hover:bg-white/10"
+                    >
+                      Log out
+                    </button>
+                  </form>
+                  <div className="my-1 border-t border-white/10" />
+                </>
+              ) : null}
               <Link
                 href="/help"
                 className="block min-h-11 touch-manipulation px-4 py-3 text-foreground hover:bg-white/10"
               >
                 Help
               </Link>
-              <Link
-                href="/trending"
-                className="block min-h-11 touch-manipulation px-4 py-3 text-foreground hover:bg-white/10"
-              >
-                Popular
-              </Link>
-              <Link
-                href="/news"
-                className="block min-h-11 touch-manipulation px-4 py-3 text-foreground hover:bg-white/10"
-              >
-                News
-              </Link>
-              <Link
-                href="/explore"
-                className="block min-h-11 touch-manipulation px-4 py-3 text-foreground hover:bg-white/10"
-              >
-                Explore
-              </Link>
-              <Link
-                href="/posts"
-                className="block min-h-11 touch-manipulation px-4 py-3 text-foreground hover:bg-white/10 sm:hidden"
-              >
-                All posts
-              </Link>
-              {session?.user ? (
-                <Link
-                  href="/settings"
-                  className="block min-h-11 touch-manipulation px-4 py-3 text-foreground hover:bg-white/10 sm:hidden"
-                >
-                  Settings
-                </Link>
-              ) : null}
             </div>
           </details>
         </div>
