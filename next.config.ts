@@ -51,6 +51,9 @@ const nextConfig: NextConfig = {
     root: projectRoot,
   },
   images: {
+    // Strapi runs on localhost in dev; Next.js blocks image optimization
+    // fetches to private IPs by default to prevent SSRF.
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: "http",
