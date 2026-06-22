@@ -9,6 +9,7 @@ import { appendActorQuery } from "@/lib/actor";
 import { fallbackThumbnail } from "@/lib/feed-post";
 import { fetchStrapi } from "@/lib/api";
 import { cloudinaryVideoPosterUrl } from "@/lib/media-video";
+import Link from "next/link";
 import {
   extractMediaUrl,
   extractRelationArray,
@@ -246,10 +247,13 @@ export default async function PostCommentsContent({
           </div>
         )
       ) : (
-        <p className="text-sm text-muted-foreground">
-          Sign in to leave a comment.
-        </p>
-      )}
+          <Link
+              href="/login"
+              className="inline-flex h-10 min-h-10 touch-manipulation items-center rounded-full bg-[#ff4500] px-4 text-xs font-bold text-white hover:bg-[#ff5414] sm:px-5"
+          >
+            Log in
+          </Link>
+        )}
 
       <section className="space-y-3">
         <h3 className="text-lg font-bold text-foreground">Comments</h3>
